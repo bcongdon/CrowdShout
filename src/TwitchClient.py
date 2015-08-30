@@ -72,7 +72,7 @@ s.send("JOIN #" + CHANNEL + "\r\n")
 @atexit.register
 def OutputChatData():
     f = open("output.txt", "w+")
-    temp = sorted(wordsDictionary.items(), key=itemgetter(1))
+    temp = sorted(wordsDictionary.items(), reverse = True, key=itemgetter(1))
     for k in temp:
         f.write(str(k) + "\n")
     f.close()
