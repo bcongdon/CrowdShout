@@ -1,55 +1,87 @@
 import socket, string, os, atexit, sys
+import argparse
 from operator import itemgetter
+import json
 
 HOST = "irc.twitch.tv"
-NAME = "Crowdshoutbot"
+NAME = ""
 PORT = 6667
-PASS = "oauth:kawkm0vci7c3oqeiom5d74u1lat26u"
+PASS = ""
+CHANNEL = ""
 readbuffer = ""
 MODT = False
-#CHANNEL = raw_input("Which channel should be watched? \n")
 wordsDictionary = {'Word': 0}
 
+
 #Open "filter" file and load the chat filters
-if os.path.isfile("filter.txt"):
-    fileIO = open("filter.txt", "r")
-    if fileIO.mode == "r":
-        filter = fileIO.readlines()
-    fileIO.close()
+if (os.path.isfile("filter.txt") == True):
+	fileIO = open("filter.txt", "r")
+	if fileIO.mode == "r":
+		filter = fileIO.readlines()
+	fileIO.close()
 else:
-    print "[Warning] Filter file not found! (filter.txt)"
-################
+	print "[Warning] Filter file not found! (filter.txt)"
 
 #Setup application with user settings
+data = dict()
+dataChanged = False
 if os.path.isfile("settings.txt"):
-    #LOAD SETTINGS#
-    print "loading settings"
+	file = open("settings.txt", "r")
+	data = json.load(file)
+	file.close()
+
+#import name
+if data.has_key("NAME"):
+	NAME = data["NAME"]
 else:
-    fileIO = open("settings.txt", "w+")
-    #PROMPT USER FOR SETTINGS#
-    fileIO.close()
-################
+	newValue = raw_input("What is your bot's name?\n")
+	data["NAME"] = newValue
+	dataChanged = True
+#import pass
+if data.has_key("PASS"):
+	PASS = data["PASS"]
+else:
+	newValue = raw_input("What is your oAuth password??\n")
+	data["PASS"] = newValue
+	dataChanged = True
+#import channel
+if data.has_key("CHANNEL"):
+	CHANNEL = data["CHANNEL"]
+else:
+	newValue = raw_input("What channel should I listen to?\n")
+	data["CHANNEL"] = newValue
+	dataChanged = True
+parser = argparse.ArgumentParser(description='Twitch chat bot.')
+parser.add_argument('--channel', type=str, help='Override Settings to switch channel')
+args = parser.parse_args()
+if args.channel:
+    CHANNEL = args.channel
+
+if dataChanged:
+	file = open("settings.txt", "w+")
+	json.dump(data, file)
+	file.close()
 
 s = socket.socket()
 s.connect((HOST,PORT))
 s.send("PASS " + PASS + "\r\n")
 s.send("NICK " + NAME + "\r\n")
-s.send("JOIN #sodapoppin \r\n")
+s.send("JOIN #" + CHANNEL + "\r\n")
 
 @atexit.register
 def OutputChatData():
     f = open("output.txt", "w+")
-    temp = sorted(wordsDictionary.items(), key=itemgetter(1))
+    temp = sorted(wordsDictionary.items(), reverse = True, key=itemgetter(1))
     for k in temp:
         f.write(str(k) + "\n")
     f.close()
-    print "done!"
+    print "Created output file!"
 
-while True:
+def ReadChat():
+    global readbuffer
     readbuffer = readbuffer + s.recv(1024)
     temp = string.split(readbuffer, "\n")
     readbuffer = temp.pop()
-
     for line in temp:
         if(line[0] == "PING"):
             s.send("PONG %s\r\n" % line[1])
@@ -67,6 +99,7 @@ while True:
                 usernamesplit = string.split(parts[1], "!")
                 username = usernamesplit[0]
 
+                global MODT
                 if MODT:
                     #print username + ": " + message
                     words = message.lower().split(" ")
@@ -87,3 +120,6 @@ while True:
                     if "End of /NAMES list" in l:
                         MODT = True
                         print "Connected to Twitch; Listening to chat."
+
+while 1:
+    ReadChat()
