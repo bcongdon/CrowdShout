@@ -159,7 +159,7 @@ def ReadChat():
                 if MODT:
                     words = message.split(" ")
                     counter = 0
-                    strippedMessage = ""
+                    strippedMessage = ''
                     for word in words:
                         if word.startswith("!"):
                             print "Caught Command"
@@ -171,13 +171,13 @@ def ReadChat():
                             #print "Repeated word: " + word + " x " + str(wordsDictionary[word])
                             strippedMessage = strippedMessage + word + " "
                         else:
-                            if word not in filter and word.startswith("!") == False:
+                            if word not in filter and not word.startswith("!") and word != '':
                                 wordsDictionary[word] = 1
                                 counter = counter + 1
                                 #print "New word: " + word
                                 strippedMessage = strippedMessage + word + " "
                     global args
-                    if not args.simple_chat:
+                    if not args.simple_chat and strippedMessage != '':
                         print strippedMessage + (" -> (%d new unique words)" % counter)
                     else:
                         print username + ": " + message
