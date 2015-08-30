@@ -5,6 +5,8 @@ from datetime import timedelta, datetime
 from socket import timeout
 import json
 
+__DEBUG__ = False
+
 HOST = "irc.twitch.tv"
 NAME = ""
 PORT = 6667
@@ -87,7 +89,8 @@ def ReadChat():
     try:
         readbuffer = readbuffer + s.recv(1024)
     except timeout:
-        #print "[Info] Caaught socket recieve timeout"
+        if False:
+            print "[Info] Caaught socket recieve timeout"
     temp = string.split(readbuffer, "\n")
     readbuffer = temp.pop()
     for line in temp:
@@ -134,5 +137,5 @@ def ReadChat():
                         print "Connected to Twitch; Listening to chat."
 
 while datetime.now() - now < timedelta(minutes = 10):
-    print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
+    #print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
     ReadChat()
