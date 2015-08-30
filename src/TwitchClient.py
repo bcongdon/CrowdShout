@@ -61,7 +61,6 @@ if dataChanged:
 	file = open("settings.txt", "w+")
 	json.dump(data, file)
 	file.close()
-	print readbuffer
 
 s = socket.socket()
 s.connect((HOST,PORT))
@@ -78,10 +77,10 @@ def OutputChatData():
     f.close()
     print "Created output file!"
 
-while True:
+def ReadChat():
+    global readbuffer
     readbuffer = readbuffer + s.recv(1024)
     temp = string.split(readbuffer, "\n")
-    #print readbuffer
     readbuffer = temp.pop()
     for line in temp:
         if(line[0] == "PING"):
@@ -100,6 +99,7 @@ while True:
                 usernamesplit = string.split(parts[1], "!")
                 username = usernamesplit[0]
 
+                global MODT
                 if MODT:
                     #print username + ": " + message
                     words = message.lower().split(" ")
@@ -120,3 +120,6 @@ while True:
                     if "End of /NAMES list" in l:
                         MODT = True
                         print "Connected to Twitch; Listening to chat."
+
+while 1:
+    ReadChat()
