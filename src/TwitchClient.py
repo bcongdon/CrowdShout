@@ -54,9 +54,7 @@ if dataChanged:
 	file = open("settings.txt", "w+")
 	json.dump(data, file)
 	file.close()
-
-	
-	
+	print readbuffer
 
 s = socket.socket()
 s.connect((HOST,PORT))
@@ -71,12 +69,13 @@ def OutputChatData():
     for k in temp:
         f.write(str(k) + "\n")
     f.close()
-    print "done!"
+    print "Created output file!"
 
-while True:
+while 1:
     readbuffer = readbuffer + s.recv(1024)
     temp = string.split(readbuffer, "\n")
     readbuffer = temp.pop()
+	
 
     for line in temp:
         if(line[0] == "PING"):
