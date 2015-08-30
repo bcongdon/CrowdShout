@@ -15,8 +15,16 @@ CHANNEL = ""
 readbuffer = ""
 MODT = False
 wordsDictionary = {}
+
+#Documents time at start of execution
 now = datetime.now()
 
+#Setup arguments parser
+parser = argparse.ArgumentParser(description='Twitch chat bot.')
+parser.add_argument('--channel', type=str, help='Override Settings to switch channel')
+parser.add_argument('--words', type=int, help='Number of unique words to listen to until quitting', default=100)
+parser.add_argument('--clear_settings', action='store_true', help='Clears cached settings for name, oAuth, channel, etc.')
+args = parser.parse_args()
 
 #Open "filter" file and load the chat filters
 if (os.path.isfile("filter.txt") == True):
@@ -34,46 +42,49 @@ if os.path.isfile("settings.txt"):
 	file = open("settings.txt", "r")
 	data = json.load(file)
 	file.close()
-
+if args.clear_settings:
+    data = dict()
 #import name
 if data.has_key("NAME"):
 	NAME = data["NAME"]
 else:
-	newValue = raw_input("What is your bot's name?\n")
-	data["NAME"] = newValue
-	dataChanged = True
+    newValue = raw_input("What is your bot's name?\n")
+    NAME = newValue
+    data["NAME"] = newValue
+    dataChanged = True
 #import pass
 if data.has_key("PASS"):
 	PASS = data["PASS"]
 else:
-	newValue = raw_input("Obtain an oAuth password at twitchapps.com/tmi\nWhat is your oAuth password??\n")
-	data["PASS"] = newValue
-	dataChanged = True
+    newValue = raw_input("Obtain an oAuth password at twitchapps.com/tmi\nWhat is your oAuth password??\n")
+    data["PASS"] = newValue
+    PASS = newValue
+    dataChanged = True
 #import channel
 if data.has_key("CHANNEL"):
 	CHANNEL = data["CHANNEL"]
 else:
-	newValue = raw_input("What channel should I listen to?\n")
-	data["CHANNEL"] = newValue
-	dataChanged = True
-parser = argparse.ArgumentParser(description='Twitch chat bot.')
-parser.add_argument('--channel', type=str, help='Override Settings to switch channel')
-parser.add_argument('--words', type=int, help='Number of unique words to listen to until quitting', default=100)
-args = parser.parse_args()
+    newValue = raw_input("What channel should I listen to?\n")
+    data["CHANNEL"] = newValue
+    CHANNEL = newValue
+    dataChanged = True
+
 if args.channel:
     CHANNEL = args.channel
+    print args.channel
 
 if dataChanged:
-	file = open("settings.txt", "w+")
-	json.dump(data, file)
-	file.close()
+    file = open("settings.txt", "w+")
+    json.dump(data, file)
+    file.close()
+    print "Settings changed"
 
 s = socket.socket()
 s.connect((HOST,PORT))
 s.send("PASS " + PASS + "\r\n")
 s.send("NICK " + NAME + "\r\n")
 s.send("JOIN #" + CHANNEL + "\r\n")
-s.settimeout(0.1)
+s.settimeout(10)
 
 @atexit.register
 def OutputChatData():
@@ -89,7 +100,7 @@ def ReadChat():
     try:
         readbuffer = readbuffer + s.recv(1024)
     except timeout:
-        if False:
+        if True:
             print "[Info] Caught socket recieve timeout"
     temp = string.split(readbuffer, "\n")
     if not MODT:
@@ -98,7 +109,6 @@ def ReadChat():
     for line in temp:
         if(line[0] == "PING"):
             s.send("PONG %s\r\n" % line[1])
-            print line[0] + " ||| " + line[1]
 
         else:
             parts = string.split(line, ":")
@@ -136,7 +146,7 @@ def ReadChat():
                     if "End of /NAMES list" in l:
                         MODT = True
                         print "********************************************"
-                        print "Connected to Twitch; Listening to chat."
+                        print "Connected to Twitch; Listening to chat on channel #" + str(CHANNEL)
                         print "********************************************"
 
 while datetime.now() - now < timedelta(minutes = 10):
