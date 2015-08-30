@@ -1,9 +1,7 @@
-import socket, string, os, atexit, sys
-import argparse
+import socket, string, os, atexit, sys, argparse, urllib2, json
 from operator import itemgetter
 from datetime import timedelta, datetime
 from socket import timeout
-import json
 
 __DEBUG__ = False
 
@@ -71,7 +69,6 @@ else:
 
 if args.channel:
     CHANNEL = args.channel
-    print args.channel
 
 if dataChanged:
     file = open("settings.txt", "w+")
@@ -84,7 +81,7 @@ s.connect((HOST,PORT))
 s.send("PASS " + PASS + "\r\n")
 s.send("NICK " + NAME + "\r\n")
 s.send("JOIN #" + CHANNEL + "\r\n")
-s.settimeout(10)
+s.settimeout(.1)
 
 @atexit.register
 def OutputChatData():
@@ -94,13 +91,28 @@ def OutputChatData():
         f.write(str(k) + "\n")
     f.close()
     print "Created output file!"
-
+    
+def CheckChannelOnline(channelName):
+    url ="https://api.twitch.tv/kraken/streams/" + channelName
+    try:
+        contents = urllib2.urlopen(url)
+    except:
+        print "Channel does not exist. Exiting..."
+        os._exit(1);
+    contents = json.load(contents)
+    if contents.has_key("stream"):
+        return "Channel #" + channelName + " is online with " + str(contents["stream"]["viewers"]) + " viewers."
+    else:
+        print "Stream is offline. Exiting..."
+        sys.exit()
+    
+CheckChannelOnline(CHANNEL)
 def ReadChat():
     global readbuffer, MODT
     try:
         readbuffer = readbuffer + s.recv(1024)
     except timeout:
-        if True:
+        if False:
             print "[Info] Caught socket recieve timeout"
     temp = string.split(readbuffer, "\n")
     if not MODT:
@@ -140,15 +152,19 @@ def ReadChat():
                     global args
                     if len(wordsDictionary) > args.words:
                         sys.exit()
-
+                else:
+                        print "Connecting..."
 
                 for l in parts:
                     if "End of /NAMES list" in l:
+                        os.system('cls' if os.name == 'nt' else 'clear')
                         MODT = True
                         print "********************************************"
                         print "Connected to Twitch; Listening to chat on channel #" + str(CHANNEL)
+                        print CheckChannelOnline(CHANNEL)
                         print "********************************************"
+                    
 
 while datetime.now() - now < timedelta(minutes = 10):
-    #   print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
+    #print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
     ReadChat()
