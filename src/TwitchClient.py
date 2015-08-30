@@ -1,4 +1,5 @@
 import socket, string, os, atexit, sys
+import argparse
 from operator import itemgetter
 import json
 
@@ -20,7 +21,7 @@ if (os.path.isfile("filter.txt") == True):
 	fileIO.close()
 else:
 	print "[Warning] Filter file not found! (filter.txt)"
-	
+
 #Setup application with user settings
 data = dict()
 dataChanged = False
@@ -28,7 +29,7 @@ if os.path.isfile("settings.txt"):
 	file = open("settings.txt", "r")
 	data = json.load(file)
 	file.close()
-	
+
 #import name
 if data.has_key("NAME"):
 	NAME = data["NAME"]
@@ -50,6 +51,12 @@ else:
 	newValue = raw_input("What channel should I listen to?\n")
 	data["CHANNEL"] = newValue
 	dataChanged = True
+parser = argparse.ArgumentParser(description='Twitch chat bot.')
+parser.add_argument('--channel', type=str, help='Override Settings to switch channel')
+args = parser.parse_args()
+if args.channel:
+    CHANNEL = args.channel
+
 if dataChanged:
 	file = open("settings.txt", "w+")
 	json.dump(data, file)
@@ -71,12 +78,11 @@ def OutputChatData():
     f.close()
     print "Created output file!"
 
-while 1:
+while True:
     readbuffer = readbuffer + s.recv(1024)
     temp = string.split(readbuffer, "\n")
+    #print readbuffer
     readbuffer = temp.pop()
-	
-
     for line in temp:
         if(line[0] == "PING"):
             s.send("PONG %s\r\n" % line[1])
