@@ -1,201 +1,102 @@
-no, : 1
-saying : 1
-all : 1
-ugh : 1
-just : 1
-only. : 1
-only, : 1
-sooo : 1
-drawful : 3
-not : 1
-sleep : 1
-looks : 1
-follow : 1
-yes : 1
-its : 5
- : 1
-votes : 2
-notcrashed : 1
-dansgame : 2
-interesting : 1
-better : 1
-to : 2
-only : 1
-going : 1
-teenager : 1
-sodathump : 1
-money : 1
-sodariot : 1
-do : 1
-it, : 1
-chivarly : 1
-get : 3
-today? : 1
-big : 3
-de : 1
-stop : 1
-gonna : 1
-shitty : 1
-game : 1
-sucks. : 1
-every : 1
-know : 1
-wutface : 2
-now : 1
-action : 1
-@darklimitz : 1
-mod : 1
-mods : 1
-like : 3
-!8ball : 1
-resub! : 1
-this : 2
-bad : 3
-either : 1
-zombies : 1
-sodarekt : 1
-popular : 1
-creativly, : 1
-isn't : 1
-sheeple : 1
-people : 1
-fucking : 3
-vote : 7
-htt : 6
-are : 1
-year : 1
-even : 1
-sub : 2
-for : 4
-game. : 1
-loll : 1
-won : 2
-666 : 1
-youtube? : 1
-horrible : 1
-it : 6
-probably : 2
-babar : 1
-cause : 1
-uh : 1
-ass : 1
-be : 1
-Word : 0
-plebs : 3
-zombis : 1
-zambi : 1
-never : 2
-plez : 1
-plz : 1
-zombie : 1
-concentrate : 1
-zombi : 19
-pleb : 1
-others : 1
-ask : 1
-come : 1
-works! : 1
-on : 2
-dammit : 1
-ok : 1
-rekt : 1
-oh : 1
-of : 3
-months : 1
-4head : 1
-@q_r_i_t_i_c_a_l : 1
-soda : 1
-let : 1
-or : 2
-op : 3
-dont : 1
-garbage : 1
-spoken : 1
-win : 1
-wii : 2
-whispering : 1
-youtubegaming : 1
-voting, : 1
-you're : 1
-olds : 1
-subscribed : 1
-it's : 2
-lol : 6
-name : 1
-pc : 1
-2 : 1
-racist : 2
-lot : 1
-chonce : 1
-prototype : 1
-was : 2
-more : 1
-complete : 1
-swiftrage : 1
-didn't : 2
-nobody : 1
-sooooo : 1
-but : 2
-fuck : 2
-boys : 1
-bigg52, : 1
-link : 2
-r4kt : 1
-than : 1
-trihard : 1
-me : 1
-anything : 2
-baaaaaaadddddd : 1
-wasn't : 1
-boring : 2
-babadoe : 1
-sucks : 2
-will : 4
-row! : 1
-sodapepe : 1
-dem : 1
-and : 2
-<3 : 1
-stream : 1
-is : 12
-chiv : 1
-site : 1
-rip : 2
-wanks : 1
-strawpoll : 2
-have : 1
-in : 1
-crash : 2
-any : 1
-shit : 1
-over..... : 1
-deadpool : 6
-awkward : 1
-xanpe : 1
-ipe7er : 2
-which : 1
-9 : 1
-u : 2
-you : 2
-again. : 1
-gaming : 3
-play : 2
-watch : 1
-remake : 1
-@zack289, : 1
-crashed : 2
-arrrrrg : 1
-'cause : 1
-guys : 2
-a : 5
-elegiggle : 2
-quiplash : 1
-i : 2
-sodaw : 4
-youtube : 4
-sodahp : 1
-xanhy : 1
-so : 2
-the : 6
-voting : 2
-*** : 1
+('Word', 0)
+('just', 1)
+('corner', 1)
+('its', 1)
+('going', 1)
+('conner', 1)
+('wales', 1)
+('happened', 1)
+('moistwheatbread', 1)
+('get', 1)
+('\x01action', 1)
+('cable', 1)
+('(\xef\xbd\xa1\xe2\x97\x95\xe2\x80\xbf\xe2\x97\x95\xef\xbd\xa1)\x01', 1)
+('resub!', 1)
+('again????', 1)
+('guy', 1)
+('warner', 1)
+('slower', 1)
+('joined', 1)
+('what', 1)
+('said', 1)
+('for', 1)
+('sodasenpai', 1)
+('3', 1)
+('babar', 1)
+('be', 1)
+('omg', 1)
+('plebs', 1)
+('rub', 1)
+('screen', 1)
+('wanted', 1)
+('rubrubs', 1)
+('babadoe', 1)
+('months', 1)
+('swear', 1)
+('cuda', 1)
+('4head', 1)
+('too.', 1)
+('hey', 1)
+('bro', 1)
+('izabella', 1)
+('valleys', 1)
+('your', 1)
+('subscribed', 1)
+('top', 1)
+('negative', 1)
+('lol', 1)
+('live', 1)
+('2', 1)
+('today', 1)
+('happy', 1)
+('door', 1)
+('warm', 1)
+('fuzzy', 1)
+('with', 1)
+('kappa', 1)
+('will', 1)
+('row!', 1)
+('can', 1)
+('cam', 1)
+('gives', 1)
+('and', 1)
+('pogchamp', 1)
+('stream', 1)
+('whisper', 1)
+('download,', 1)
+('xanhy', 1)
+('any', 1)
+('if', 1)
+('xanpe', 1)
+('same', 1)
+('other', 1)
+('bad.', 1)
+('you', 1)
+('internet?', 1)
+('birthday', 1)
+('moving', 1)
+('switch', 1)
+('thing.', 1)
+('@creativly,', 1)
+('time', 1)
+('uninstall', 1)
+('came', 1)
+('left', 1)
+('game', 2)
+('frontline221', 2)
+('right', 2)
+('@sodapoppin', 2)
+('screen.', 2)
+('he', 2)
+('my', 2)
+('a', 2)
+('sodag', 2)
+('center', 2)
+('full', 3)
+('me', 3)
+('in', 3)
+('to', 4)
+('i', 4)
+('the', 4)
+('sodaw', 5)
+('middle', 12)
