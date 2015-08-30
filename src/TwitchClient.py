@@ -21,9 +21,10 @@ now = datetime.now()
 #Setup arguments parser
 parser = argparse.ArgumentParser(description='Twitch chat bot.')
 parser.add_argument('--channel', type=str, help='Override Settings to switch channel')
-parser.add_argument('--words', type=int, help='Number of unique words to listen to until quitting', default=100)
+parser.add_argument('--words', type=int, help='Number of unique words to listen to until quitting', default=-1)
 parser.add_argument('--clear_settings', action='store_true', help='Clears cached settings for name, oAuth, channel, etc.')
 parser.add_argument('--simple_chat', action='store_true', help='Outputs only user chat info. (Becomes passive chat window)')
+parser.add_argument('--realtime', action='store_true', help='Outputs real time chat data')
 
 args = parser.parse_args()
 
@@ -177,12 +178,19 @@ def ReadChat():
                                 #print "New word: " + word
                                 strippedMessage = strippedMessage + word + " "
                     global args
-                    if not args.simple_chat:
+                    if not args.simple_chat and not args.realtime:
                         if strippedMessage != '':
                             print strippedMessage + (" -> (%d new unique words)" % counter)
+                    if args.realtime:
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        count = 0
+                        for k in sorted(wordsDictionary.items(), reverse = True, key=itemgetter(1)):
+                            if count < 25:
+                                print k
+                                count += 1
                     else:
                         print username + ": " + message
-                    if len(wordsDictionary) > args.words:
+                    if len(wordsDictionary) > args.words and args.words != -1:
                         sys.exit()
                 else:
                         print "Connecting..."
