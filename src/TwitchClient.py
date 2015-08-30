@@ -1,40 +1,68 @@
 import socket, string, os, atexit, sys
 from operator import itemgetter
+import json
 
 HOST = "irc.twitch.tv"
-NAME = "Crowdshoutbot"
+NAME = ""
 PORT = 6667
-PASS = "oauth:kawkm0vci7c3oqeiom5d74u1lat26u"
+PASS = ""
+CHANNEL = ""
 readbuffer = ""
 MODT = False
-#CHANNEL = raw_input("Which channel should be watched? \n")
 wordsDictionary = {'Word': 0}
 
-#Open "filter" file and load the chat filters
-if os.path.isfile("filter.txt"):
-    fileIO = open("filter.txt", "r")
-    if fileIO.mode == "r":
-        filter = fileIO.readlines()
-    fileIO.close()
-else:
-    print "[Warning] Filter file not found! (filter.txt)"
-################
 
-#Setup application with user settings
-if os.path.isfile("settings.txt"):
-    #LOAD SETTINGS#
-    print "loading settings"
+#Open "filter" file and load the chat filters
+if (os.path.isfile("filter.txt") == True):
+	fileIO = open("filter.txt", "r")
+	if fileIO.mode == "r":
+		filter = fileIO.readlines()
+	fileIO.close()
 else:
-    fileIO = open("settings.txt", "w+")
-    #PROMPT USER FOR SETTINGS#
-    fileIO.close()
-################
+	print "[Warning] Filter file not found! (filter.txt)"
+	
+#Setup application with user settings
+data = dict()
+dataChanged = False
+if os.path.isfile("settings.txt"):
+	file = open("settings.txt", "r")
+	data = json.load(file)
+	file.close()
+	
+#import name
+if data.has_key("NAME"):
+	NAME = data["NAME"]
+else:
+	newValue = raw_input("What is your bot's name?\n")
+	data["NAME"] = newValue
+	dataChanged = True
+#import pass
+if data.has_key("PASS"):
+	PASS = data["PASS"]
+else:
+	newValue = raw_input("What is your oAuth password??\n")
+	data["PASS"] = newValue
+	dataChanged = True
+#import channel
+if data.has_key("CHANNEL"):
+	CHANNEL = data["CHANNEL"]
+else:
+	newValue = raw_input("What channel should I listen to?\n")
+	data["CHANNEL"] = newValue
+	dataChanged = True
+if dataChanged:
+	file = open("settings.txt", "w+")
+	json.dump(data, file)
+	file.close()
+
+	
+	
 
 s = socket.socket()
 s.connect((HOST,PORT))
 s.send("PASS " + PASS + "\r\n")
 s.send("NICK " + NAME + "\r\n")
-s.send("JOIN #sodapoppin \r\n")
+s.send("JOIN #" + CHANNEL + "\r\n")
 
 @atexit.register
 def OutputChatData():
