@@ -2,6 +2,7 @@ import socket, string, os, atexit, sys
 import argparse
 from operator import itemgetter
 from datetime import timedelta, datetime
+from socket import timeout
 import json
 
 HOST = "irc.twitch.tv"
@@ -70,6 +71,7 @@ s.connect((HOST,PORT))
 s.send("PASS " + PASS + "\r\n")
 s.send("NICK " + NAME + "\r\n")
 s.send("JOIN #" + CHANNEL + "\r\n")
+s.settimeout(0.1)
 
 @atexit.register
 def OutputChatData():
@@ -82,7 +84,10 @@ def OutputChatData():
 
 def ReadChat():
     global readbuffer
-    readbuffer = readbuffer + s.recv(1024)
+    try:
+        readbuffer = readbuffer + s.recv(1024)
+    except timeout:
+        #print "[Info] Caaught socket recieve timeout"
     temp = string.split(readbuffer, "\n")
     readbuffer = temp.pop()
     for line in temp:
