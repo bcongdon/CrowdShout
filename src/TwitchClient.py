@@ -1,6 +1,7 @@
 import socket, string, os, atexit, sys
 import argparse
 from operator import itemgetter
+from datetime import timedelta, datetime
 import json
 
 HOST = "irc.twitch.tv"
@@ -11,6 +12,7 @@ CHANNEL = ""
 readbuffer = ""
 MODT = False
 wordsDictionary = {}
+now = datetime.now()
 
 
 #Open "filter" file and load the chat filters
@@ -126,5 +128,6 @@ def ReadChat():
                         MODT = True
                         print "Connected to Twitch; Listening to chat."
 
-while 1:
+while datetime.now() - now < timedelta(minutes = 10):
+    print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
     ReadChat()
