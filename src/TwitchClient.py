@@ -103,6 +103,7 @@ def ReadChat():
                 global MODT
                 if MODT:
                     #print username + ": " + message
+                    message = message.translate(string.maketrans("",""), string.punctuation)
                     words = message.lower().split(" ")
                     counter = 0
                     for word in words:
