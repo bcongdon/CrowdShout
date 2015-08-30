@@ -22,6 +22,8 @@ parser = argparse.ArgumentParser(description='Twitch chat bot.')
 parser.add_argument('--channel', type=str, help='Override Settings to switch channel')
 parser.add_argument('--words', type=int, help='Number of unique words to listen to until quitting', default=100)
 parser.add_argument('--clear_settings', action='store_true', help='Clears cached settings for name, oAuth, channel, etc.')
+parser.add_argument('--simple_chat', action='store_true', help='Outputs only user chat info')
+
 args = parser.parse_args()
 
 #Open "filter" file and load the chat filters
@@ -135,9 +137,8 @@ def ReadChat():
                 username = usernamesplit[0]
 
                 if MODT:
-                    #print username + ": " + message
-                    message = message.translate(string.maketrans("",""), string.punctuation)
-                    words = message.lower().split(" ")
+                    strippedMessage = message.translate(string.maketrans("",""), string.punctuation)
+                    words = strippedMessage.lower().split(" ")
                     counter = 0
                     for word in words:
                         if wordsDictionary.has_key(word):
@@ -148,7 +149,11 @@ def ReadChat():
                                 wordsDictionary[word] = 1
                                 counter = counter + 1
                                 #print "New word: " + word
-                    print message + (" -> (%d new unique words)" % counter)
+                    global args
+                    if not args.simple_chat:
+                        print strippedMessage + (" -> (%d new unique words)" % counter)
+                    else:
+                        print username + ": " + message
                     global args
                     if len(wordsDictionary) > args.words:
                         sys.exit()
