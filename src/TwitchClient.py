@@ -10,7 +10,7 @@ PASS = ""
 CHANNEL = ""
 readbuffer = ""
 MODT = False
-wordsDictionary = {'Word': 0}
+wordsDictionary = {}
 
 
 #Open "filter" file and load the chat filters
