@@ -46,7 +46,7 @@ else:
 if data.has_key("PASS"):
 	PASS = data["PASS"]
 else:
-	newValue = raw_input("What is your oAuth password??\n")
+	newValue = raw_input("Obtain an oAuth password at twitchapps.com/tmi\nWhat is your oAuth password??\n")
 	data["PASS"] = newValue
 	dataChanged = True
 #import channel
@@ -85,13 +85,15 @@ def OutputChatData():
     print "Created output file!"
 
 def ReadChat():
-    global readbuffer
+    global readbuffer, MODT
     try:
         readbuffer = readbuffer + s.recv(1024)
     except timeout:
         if False:
-            print "[Info] Caaught socket recieve timeout"
+            print "[Info] Caught socket recieve timeout"
     temp = string.split(readbuffer, "\n")
+    if not MODT:
+        print temp
     readbuffer = temp.pop()
     for line in temp:
         if(line[0] == "PING"):
@@ -110,7 +112,6 @@ def ReadChat():
                 usernamesplit = string.split(parts[1], "!")
                 username = usernamesplit[0]
 
-                global MODT
                 if MODT:
                     #print username + ": " + message
                     message = message.translate(string.maketrans("",""), string.punctuation)
@@ -134,7 +135,9 @@ def ReadChat():
                 for l in parts:
                     if "End of /NAMES list" in l:
                         MODT = True
+                        print "********************************************"
                         print "Connected to Twitch; Listening to chat."
+                        print "********************************************"
 
 while datetime.now() - now < timedelta(minutes = 10):
     #   print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
