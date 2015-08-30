@@ -53,6 +53,7 @@ else:
 	dataChanged = True
 parser = argparse.ArgumentParser(description='Twitch chat bot.')
 parser.add_argument('--channel', type=str, help='Override Settings to switch channel')
+parser.add_argument('--words', type=int, help='Number of unique words to listen to until quitting', default=100)
 args = parser.parse_args()
 if args.channel:
     CHANNEL = args.channel
@@ -103,16 +104,19 @@ def ReadChat():
                 if MODT:
                     #print username + ": " + message
                     words = message.lower().split(" ")
-                    print words
+                    counter = 0
                     for word in words:
                         if wordsDictionary.has_key(word):
                             wordsDictionary[word] = wordsDictionary[word] + 1
                             #print "Repeated word: " + word + " x " + str(wordsDictionary[word])
                         else:
-                            if word not in filter:
+                            if word not in filter and word.startswith("!") == False:
                                 wordsDictionary[word] = 1
+                                counter = counter + 1
                                 #print "New word: " + word
-                    if len(wordsDictionary) > 100:
+                    print message + (" -> (%d new unique words)" % counter)
+                    global args
+                    if len(wordsDictionary) > args.words:
                         sys.exit()
 
 
