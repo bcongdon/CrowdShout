@@ -137,5 +137,5 @@ def ReadChat():
                         print "Connected to Twitch; Listening to chat."
 
 while datetime.now() - now < timedelta(minutes = 10):
-    #print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
+    #   print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
     ReadChat()
