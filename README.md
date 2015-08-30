@@ -1,5 +1,5 @@
 # CrowdShout
-A way for streamers to gauge realtime chat responses
+A realtime tool for Twitch streamers to gauge the mood of their chat.
 
 ## Motivation
 

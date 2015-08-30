@@ -1,4 +1,5 @@
 import socket, string
+from operator import itemgetter
 import os
 
 HOST = "irc.twitch.tv"
@@ -10,9 +11,25 @@ MODT = False
 #CHANNEL = raw_input("Which channel should be watched? \n")
 wordsDictionary = {'Word': 0}
 
-fileIO = open("Filter.txt", "r")
-if fileIO.mode == "r":
-    filter = fileIO.readlines()
+#Open "filter" file and load the chat filters
+if os.path.isfile("filter.txt"):
+    fileIO = open("filter.txt", "r")
+    if fileIO.mode == "r":
+        filter = fileIO.readlines()
+    fileIO.close()
+else:
+    print "[Warning] Filter file not found! (filter.txt)"
+################
+
+#Setup application with user settings
+if os.path.isfile("settings.txt"):
+    #LOAD SETTINGS#
+    print "loading settings"
+else:
+    fileIO = open("settings.txt", "w+")
+    #PROMPT USER FOR SETTINGS#
+    fileIO.close()
+################
 
 s = socket.socket()
 s.connect((HOST,PORT))
@@ -22,7 +39,6 @@ s.send("JOIN #sodapoppin \r\n")
 
 while True:
     readbuffer = readbuffer + s.recv(1024)
-    #print readbuffer
     temp = string.split(readbuffer, "\n")
     readbuffer = temp.pop()
 
@@ -54,6 +70,11 @@ while True:
                             if word not in filter:
                                 wordsDictionary[word] = 1
                                 print "New word: " + word
+                    f = open("output.txt", "w+")
+                    sorted(wordsDictionary.items(), key = lambda x: x[1])
+                    for k in wordsDictionary.keys():
+                        f.write(k + " : " + str(wordsDictionary[k]) + "\n")
+                    f.close()
 
                 for l in parts:
                     if "End of /NAMES list" in l:
