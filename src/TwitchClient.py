@@ -162,7 +162,7 @@ def ReadChat():
                     strippedMessage = ''
                     for word in words:
                         if word.startswith("!"):
-                            print "Caught Command"
+                            #print "Caught Command"
                             break
                         word = word.translate(string.maketrans("",""), string.punctuation).lower()
                         
@@ -177,8 +177,9 @@ def ReadChat():
                                 #print "New word: " + word
                                 strippedMessage = strippedMessage + word + " "
                     global args
-                    if not args.simple_chat and strippedMessage != '':
-                        print strippedMessage + (" -> (%d new unique words)" % counter)
+                    if not args.simple_chat:
+                        if strippedMessage != '':
+                            print strippedMessage + (" -> (%d new unique words)" % counter)
                     else:
                         print username + ": " + message
                     if len(wordsDictionary) > args.words:
@@ -191,9 +192,10 @@ def ReadChat():
                         os.system('cls' if os.name == 'nt' else 'clear')
                         MODT = True
                         AddLocalEmotesToFilter(CHANNEL)
+                        channelStats = CheckChannelOnline(CHANNEL)
                         print "********************************************"
                         print "Connected to Twitch; Listening to chat on channel #" + str(CHANNEL)
-                        print CheckChannelOnline(CHANNEL)
+                        print channelStats
                         print "********************************************"
                     
 
