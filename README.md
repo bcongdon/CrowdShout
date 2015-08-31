@@ -10,11 +10,16 @@ CrowdShout aims to assist in reclaiming meaning from the onslaught of Twitch vie
 ## Usage
 Optional arguments:
   -h, --help         show this help message and exit
+
   --channel CHANNEL  Override Settings to switch channel
+
   --words WORDS      Number of unique words to listen to until quitting
+
   --clear_settings   Clears cached settings for name, oAuth, channel, etc.
+
   --simple_chat      Outputs only user chat info. (Becomes passive chat
                      window)
+                     
   --realtime         Outputs real time chat data
 
 ## References
