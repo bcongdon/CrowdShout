@@ -25,7 +25,7 @@ parser.add_argument('--words', type=int, help='Number of unique words to listen 
 parser.add_argument('--clear_settings', action='store_true', help='Clears cached settings for name, oAuth, channel, etc.')
 parser.add_argument('--simple_chat', action='store_true', help='Outputs only user chat info. (Becomes passive chat window)')
 parser.add_argument('--realtime', action='store_true', help='Outputs real time chat data')
-
+parser.add_argument('--top_stream', action='store_true', help='Listens to Twitch channel with highest viewership')
 args = parser.parse_args()
 
 #Open "filter" file and load the chat filters
@@ -82,13 +82,6 @@ if dataChanged:
     file.close()
     print "Settings changed"
 
-s = socket.socket()
-s.connect((HOST,PORT))
-s.send("PASS " + PASS + "\r\n")
-s.send("NICK " + NAME + "\r\n")
-s.send("JOIN #" + CHANNEL + "\r\n")
-s.settimeout(.1)
-
 @atexit.register
 def OutputChatData():
     f = open("output.txt", "w+")
@@ -128,24 +121,29 @@ def AddLocalEmotesToFilter(channelName):
             filter.append(emote["regex"].lower())
             #file.write(emote["regex"].lower() + "\n")
 
-# def GetTopChannel():
-#     url ="https://api.twitch.tv/kraken/streams"
-#     try:
-#         contents = urllib2.urlopen(url)
-#     except:
-#         print "Could not load streams. Exiting..."
-#         os._exit(1);
-#     contents = json.load(contents)
-#     for game in contents:
-#         for stream in game:
-#             try:
-#                 if stream["viewers"] > highestGame["viewers"]:
-#                     highestStream = stream
-#             except Exception as e:
-#                 try:
-#                     highestStream = stream["viewers"]
-#                 except Exception as e:
-#                     print "Wierd error trying to find stream with highest viewers."
+def GetTopChannel():
+    url ="https://api.twitch.tv/kraken/streams"
+    try:
+        contents = urllib2.urlopen(url)
+    except:
+        print "Could not load streams. Exiting..."
+        os._exit(1);
+    contents = json.load(contents)
+    highestStream = contents["streams"][0]
+    for stream in contents["streams"]:
+        if stream["viewers"] > highestStream["viewers"]:
+            highestStream = stream
+    return highestStream["channel"]["name"]
+
+
+s = socket.socket()
+s.connect((HOST,PORT))
+s.send("PASS " + PASS + "\r\n")
+s.send("NICK " + NAME + "\r\n")
+if args.top_stream:
+    CHANNEL = GetTopChannel()
+s.send("JOIN #" + CHANNEL + "\r\n")
+s.settimeout(.1)
 
 CheckChannelOnline(CHANNEL)
 
