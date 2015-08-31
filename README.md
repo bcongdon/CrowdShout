@@ -7,5 +7,19 @@ With Twitch viewership exploding, it can be difficult for streamers to make sens
 
 CrowdShout aims to assist in reclaiming meaning from the onslaught of Twitch viewers' comments by analyzing the content of recent chat messages and presenting a realtime "digest" of the chat which can be understood at a glance.
 
+## Usage
+**Optional arguments:**
+
+  --channel CHANNEL  Override Settings to switch channel
+
+  --words WORDS      Number of unique words to listen to until quitting
+
+  --clear_settings   Clears cached settings for name, oAuth, channel, etc.
+
+  --simple_chat      Outputs only user chat info. (Becomes passive chat
+                     window)
+
+  --realtime         Outputs real time chat data
+
 ## References
 Thanks to Exos for their python Twitch IRC client script: http://pastebin.com/PMx00Fsi

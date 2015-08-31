@@ -21,10 +21,11 @@ now = datetime.now()
 #Setup arguments parser
 parser = argparse.ArgumentParser(description='Twitch chat bot.')
 parser.add_argument('--channel', type=str, help='Override Settings to switch channel')
-parser.add_argument('--words', type=int, help='Number of unique words to listen to until quitting', default=100)
+parser.add_argument('--words', type=int, help='Number of unique words to listen to until quitting', default=-1)
 parser.add_argument('--clear_settings', action='store_true', help='Clears cached settings for name, oAuth, channel, etc.')
 parser.add_argument('--simple_chat', action='store_true', help='Outputs only user chat info. (Becomes passive chat window)')
-
+parser.add_argument('--realtime', action='store_true', help='Outputs real time chat data')
+parser.add_argument('--top_stream', action='store_true', help='Listens to Twitch channel with highest viewership')
 args = parser.parse_args()
 
 #Open "filter" file and load the chat filters
@@ -81,13 +82,6 @@ if dataChanged:
     file.close()
     print "Settings changed"
 
-s = socket.socket()
-s.connect((HOST,PORT))
-s.send("PASS " + PASS + "\r\n")
-s.send("NICK " + NAME + "\r\n")
-s.send("JOIN #" + CHANNEL + "\r\n")
-s.settimeout(.1)
-
 @atexit.register
 def OutputChatData():
     f = open("output.txt", "w+")
@@ -96,7 +90,7 @@ def OutputChatData():
         f.write(str(k) + "\n")
     f.close()
     print "Created output file!"
-    
+
 def CheckChannelOnline(channelName):
     url ="https://api.twitch.tv/kraken/streams/" + channelName
     try:
@@ -105,12 +99,13 @@ def CheckChannelOnline(channelName):
         print "Channel does not exist. Exiting..."
         os._exit(1);
     contents = json.load(contents)
-    if contents.has_key("stream"):
-        return "Channel #" + channelName + " is online with " + str(contents["stream"]["viewers"]) + " viewers."
-    else:
+    try:
+        if contents.has_key("stream"):
+            return "Channel #" + channelName + " is online with " + str(contents["stream"]["viewers"]) + " viewers."
+    except:
         print "Stream is offline. Exiting..."
         sys.exit()
-        
+
 def AddLocalEmotesToFilter(channelName):
     global filter
     url ="https://api.twitch.tv/kraken/chat/" + channelName + "/emoticons"
@@ -125,8 +120,31 @@ def AddLocalEmotesToFilter(channelName):
         for emote in contents["emoticons"]:
             filter.append(emote["regex"].lower())
             #file.write(emote["regex"].lower() + "\n")
-        
-    
+
+def GetTopChannel():
+    url ="https://api.twitch.tv/kraken/streams"
+    try:
+        contents = urllib2.urlopen(url)
+    except:
+        print "Could not load streams. Exiting..."
+        os._exit(1);
+    contents = json.load(contents)
+    highestStream = contents["streams"][0]
+    for stream in contents["streams"]:
+        if stream["viewers"] > highestStream["viewers"]:
+            highestStream = stream
+    return highestStream["channel"]["name"]
+
+
+s = socket.socket()
+s.connect((HOST,PORT))
+s.send("PASS " + PASS + "\r\n")
+s.send("NICK " + NAME + "\r\n")
+if args.top_stream:
+    CHANNEL = GetTopChannel()
+s.send("JOIN #" + CHANNEL + "\r\n")
+s.settimeout(.1)
+
 CheckChannelOnline(CHANNEL)
 
 def ReadChat():
@@ -165,7 +183,7 @@ def ReadChat():
                             #print "Caught Command"
                             break
                         word = word.translate(string.maketrans("",""), string.punctuation).lower()
-                        
+
                         if wordsDictionary.has_key(word):
                             wordsDictionary[word] = wordsDictionary[word] + 1
                             #print "Repeated word: " + word + " x " + str(wordsDictionary[word])
@@ -177,12 +195,19 @@ def ReadChat():
                                 #print "New word: " + word
                                 strippedMessage = strippedMessage + word + " "
                     global args
-                    if not args.simple_chat:
+                    if not args.simple_chat and not args.realtime:
                         if strippedMessage != '':
                             print strippedMessage + (" -> (%d new unique words)" % counter)
+                    if args.realtime:
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        count = 0
+                        for k in sorted(wordsDictionary.items(), reverse = True, key=itemgetter(1)):
+                            if count < 25:
+                                print k
+                                count += 1
                     else:
                         print username + ": " + message
-                    if len(wordsDictionary) > args.words:
+                    if len(wordsDictionary) > args.words and args.words != -1:
                         sys.exit()
                 else:
                         print "Connecting..."
@@ -197,9 +222,8 @@ def ReadChat():
                         print "Connected to Twitch; Listening to chat on channel #" + str(CHANNEL)
                         print channelStats
                         print "********************************************"
-                    
+
 
 while datetime.now() - now < timedelta(minutes = 10):
     #print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
     ReadChat()
-    
