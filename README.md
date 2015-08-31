@@ -8,7 +8,8 @@ With Twitch viewership exploding, it can be difficult for streamers to make sens
 CrowdShout aims to assist in reclaiming meaning from the onslaught of Twitch viewers' comments by analyzing the content of recent chat messages and presenting a realtime "digest" of the chat which can be understood at a glance.
 
 ## Usage
-Optional arguments:
+**Optional arguments:**
+
   -h, --help         show this help message and exit
 
   --channel CHANNEL  Override Settings to switch channel
@@ -19,7 +20,7 @@ Optional arguments:
 
   --simple_chat      Outputs only user chat info. (Becomes passive chat
                      window)
-                     
+
   --realtime         Outputs real time chat data
 
 ## References
