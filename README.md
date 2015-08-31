@@ -10,8 +10,6 @@ CrowdShout aims to assist in reclaiming meaning from the onslaught of Twitch vie
 ## Usage
 **Optional arguments:**
 
-  -h, --help         show this help message and exit
-
   --channel CHANNEL  Override Settings to switch channel
 
   --words WORDS      Number of unique words to listen to until quitting
