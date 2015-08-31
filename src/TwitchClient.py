@@ -97,7 +97,7 @@ def OutputChatData():
         f.write(str(k) + "\n")
     f.close()
     print "Created output file!"
-    
+
 def CheckChannelOnline(channelName):
     url ="https://api.twitch.tv/kraken/streams/" + channelName
     try:
@@ -106,12 +106,13 @@ def CheckChannelOnline(channelName):
         print "Channel does not exist. Exiting..."
         os._exit(1);
     contents = json.load(contents)
-    if contents.has_key("stream"):
-        return "Channel #" + channelName + " is online with " + str(contents["stream"]["viewers"]) + " viewers."
-    else:
+    try:
+        if contents.has_key("stream"):
+            return "Channel #" + channelName + " is online with " + str(contents["stream"]["viewers"]) + " viewers."
+    except:
         print "Stream is offline. Exiting..."
         sys.exit()
-        
+
 def AddLocalEmotesToFilter(channelName):
     global filter
     url ="https://api.twitch.tv/kraken/chat/" + channelName + "/emoticons"
@@ -126,8 +127,26 @@ def AddLocalEmotesToFilter(channelName):
         for emote in contents["emoticons"]:
             filter.append(emote["regex"].lower())
             #file.write(emote["regex"].lower() + "\n")
-        
-    
+
+# def GetTopChannel():
+#     url ="https://api.twitch.tv/kraken/streams"
+#     try:
+#         contents = urllib2.urlopen(url)
+#     except:
+#         print "Could not load streams. Exiting..."
+#         os._exit(1);
+#     contents = json.load(contents)
+#     for game in contents:
+#         for stream in game:
+#             try:
+#                 if stream["viewers"] > highestGame["viewers"]:
+#                     highestStream = stream
+#             except Exception as e:
+#                 try:
+#                     highestStream = stream["viewers"]
+#                 except Exception as e:
+#                     print "Wierd error trying to find stream with highest viewers."
+
 CheckChannelOnline(CHANNEL)
 
 def ReadChat():
@@ -166,7 +185,7 @@ def ReadChat():
                             #print "Caught Command"
                             break
                         word = word.translate(string.maketrans("",""), string.punctuation).lower()
-                        
+
                         if wordsDictionary.has_key(word):
                             wordsDictionary[word] = wordsDictionary[word] + 1
                             #print "Repeated word: " + word + " x " + str(wordsDictionary[word])
@@ -205,9 +224,8 @@ def ReadChat():
                         print "Connected to Twitch; Listening to chat on channel #" + str(CHANNEL)
                         print channelStats
                         print "********************************************"
-                    
+
 
 while datetime.now() - now < timedelta(minutes = 10):
     #print str(datetime.now() - now) + " out of " + str(timedelta(minutes = 10))
     ReadChat()
-    
