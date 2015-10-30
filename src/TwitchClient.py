@@ -2,6 +2,7 @@ import socket, string, os, atexit, sys, argparse, urllib2, json
 from operator import itemgetter
 from datetime import timedelta, datetime
 from socket import timeout
+from enum import Enum
 
 __DEBUG__ = False
 
@@ -133,17 +134,27 @@ def GetTopChannel():
     for stream in contents["streams"]:
         if stream["viewers"] > highestStream["viewers"]:
             highestStream = stream
+    chat_prop_url = "https://api.twitch.tv/api/channels/" + highestStream["channel"]["name"] + "/chat_properties"
+    try:
+        chat_properties = urllib2.urlopen(chat_prop_url)
+    except:
+        print "Could not load chat properties. Exiting..."
+        os._exit(1);
+    chat_properties = json.load(chat_properties)
+    newHost = chat_properties["chat_servers"][3].split(':')[0]
+    global HOST
+    HOST = newHost
+    print HOST
     return highestStream["channel"]["name"]
 
-
+if args.top_stream:
+    CHANNEL = GetTopChannel()
 s = socket.socket()
+s.settimeout(.1)
 s.connect((HOST,PORT))
 s.send("PASS " + PASS + "\r\n")
 s.send("NICK " + NAME + "\r\n")
-if args.top_stream:
-    CHANNEL = GetTopChannel()
 s.send("JOIN #" + CHANNEL + "\r\n")
-s.settimeout(.1)
 
 CheckChannelOnline(CHANNEL)
 
@@ -185,12 +196,12 @@ def ReadChat():
                         word = word.translate(string.maketrans("",""), string.punctuation).lower()
 
                         if wordsDictionary.has_key(word):
-                            wordsDictionary[word] = wordsDictionary[word] + 1
+                            wordsDictionary[word].append(datetime.now())
                             #print "Repeated word: " + word + " x " + str(wordsDictionary[word])
                             strippedMessage = strippedMessage + word + " "
                         else:
                             if word not in filter and not word.startswith("!") and word != '':
-                                wordsDictionary[word] = 1
+                                wordsDictionary[word] = [datetime.now]
                                 counter = counter + 1
                                 #print "New word: " + word
                                 strippedMessage = strippedMessage + word + " "
@@ -198,7 +209,7 @@ def ReadChat():
                     if not args.simple_chat and not args.realtime:
                         if strippedMessage != '':
                             print strippedMessage + (" -> (%d new unique words)" % counter)
-                    if args.realtime:
+                    if args.realtime and not args.simple_chat:
                         os.system('cls' if os.name == 'nt' else 'clear')
                         count = 0
                         for k in sorted(wordsDictionary.items(), reverse = True, key=itemgetter(1)):
@@ -216,12 +227,16 @@ def ReadChat():
                     if "End of /NAMES list" in l:
                         os.system('cls' if os.name == 'nt' else 'clear')
                         MODT = True
+                        global CHANNEL
                         AddLocalEmotesToFilter(CHANNEL)
                         channelStats = CheckChannelOnline(CHANNEL)
                         print "********************************************"
                         print "Connected to Twitch; Listening to chat on channel #" + str(CHANNEL)
                         print channelStats
                         print "********************************************"
+@atexit.register
+def CloseSocket():
+    s.close()
 
 
 while datetime.now() - now < timedelta(minutes = 10):
